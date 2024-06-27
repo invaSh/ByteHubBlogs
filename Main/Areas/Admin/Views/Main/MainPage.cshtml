@@ -1,0 +1,336 @@
+﻿@{
+    ViewData["Title"] = "MainPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Add these in the head section of your HTML -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
+
+    <div class="row mt-4">
+        <div class="col-md-6 mx-auto">
+            <!-- Add a container div for the background image -->
+            <div class="background-container" style="background-image: url('path/to/your/image.jpg'); background-size: cover; background-position: center; height: 300px; position: relative;">
+
+                <!-- Navbar with Dashboard Title -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">
+                            <i class="bi bi-house-door"></i> Dashboard
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <!-- Add a user chart here -->
+                        <div class="chart-overlay">
+                            <!-- User Login Chart -->
+                            <canvas id="userLoginChart" style="width: 100%; height: 100%;"></canvas>
+
+                            <!-- Include the script to generate the chart -->
+                            <script>
+                                // Sample data for the last month (number of logins per day)
+                                var loginData = [10, 15, 8, 12, 20, 14, 18, 22, 16, 10, 24, 19, 13, 17, 25, 21, 15, 9, 14, 23, 18, 12, 16, 20, 22, 14, 18, 23, 19, 15];
+
+                                // Get today's date
+                                var today = new Date();
+
+                                // Generate labels for the last 30 days
+                                var labels = Array.from({ length: 30 }, (_, i) => {
+                                    var date = new Date(today);
+                                    date.setDate(today.getDate() - i);
+                                    return date.toLocaleDateString();
+                                }).reverse();
+
+                                // User Login Chart
+                                var ctx = document.getElementById('userLoginChart').getContext('2d');
+                                var userLoginChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: 'Users Logged In',
+                                            data: loginData,
+                                            borderColor: 'rgba(75, 192, 192, 1)',
+                                            borderWidth: 2,
+                                            fill: false,
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: [{
+                                                grid: {
+                                                    display: false
+                                                }
+                                            }],
+                                            y: [{
+                                                ticks: {
+                                                    beginAtZero: true,
+                                                    stepSize: 5
+                                                }
+                                            }]
+                                        }
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </nav>
+
+            </div>
+        </div>
+    </div>
+
+
+
+<!-- Task Management -->
+<div class="row mt-4">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Task Management</h5>
+                <!-- Example: -->
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Write Blog Post 1
+                        <span class="badge bg-success">Completed</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Edit Images for Blog Post 2
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Review Blog Post 3
+                        <span class="badge bg-info">Pending</span>
+                    </li>
+                    <!-- Add more tasks as needed -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Task Management -->
+<style>
+    .completed-task {
+        background-color: #28a745;
+    }
+
+    .in-progress-task {
+        background-color: #ffc107;
+    }
+
+    .pending-task {
+        background-color: #007bff;
+    }
+</style>
+
+<div class="row mt-4">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Task Management</h5>
+                <!-- Example: -->
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center completed-task">
+                        Write Blog Post 1
+                        <span class="badge rounded-pill">Completed</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center in-progress-task">
+                        Edit Images for Blog Post 2
+                        <span class="badge rounded-pill">In Progress</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center pending-task">
+                        Review Blog Post 3
+                        <span class="badge rounded-pill">Pending</span>
+                    </li>
+                    <!-- Add more tasks as needed -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Include Chart.js library -->
+
+<style>
+    #chartContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 300px; /* Adjust the height as needed */
+    }
+</style>
+
+<div class="row mt-4">
+    <div class="col-md-6 mx-auto">
+        <!-- Analytics Dashboard -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Analytics Dashboard</h5>
+                <div id="chartContainer">
+                    <canvas id="analyticsChart" style="width: 80%; height: 80%;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // Generate random data for demonstration
+    function generateRandomData() {
+        var data = [];
+        for (var i = 0; i < 6; i++) {
+            data.push(Math.floor(Math.random() * 100));
+        }
+        return data;
+    }
+
+    // Analytics Chart
+    var analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+    var analyticsChart = new Chart(analyticsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6'],
+            datasets: [{
+                label: 'Page Views',
+                data: generateRandomData(),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: [{
+                    grid: {
+                        display: false
+                    }
+                }],
+                y: [{
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: 20
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+
+    <div class="row mt-4">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Social Media Feed</h5>
+                    <!-- Social Media Icons -->
+                    <div class="social-icons">
+                        <!-- Facebook Icon -->
+                        <a href="#" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+
+                        <!-- Twitter Icon -->
+                        <a href="#" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+
+                        <!-- Instagram Icon -->
+                        <a href="#" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+
+                        <!-- LinkedIn Icon -->
+                        <a href="#" target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+
+                        <!-- Pinterest Icon -->
+                        <a href="#" target="_blank" class="social-icon"><i class="fab fa-pinterest"></i></a>
+
+                        <!-- Add more social media icons as needed -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Interactive Map -->
+<div class="row mt-4">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Interactive Map</h5>
+                <div id="map" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    // Add a tile layer (you can replace this with your own map tiles)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add a marker to the map
+    L.marker([51.505, -0.09]).addTo(map)
+        .bindPopup('Your Location')
+        .openPopup();
+</script>
+
+
+
+<!-- Social Metrics -->
+<div class="row mt-4">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Social Metrics</h5>
+                <canvas id="socialMetricsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var socialMetricsCtx = document.getElementById('socialMetricsChart').getContext('2d');
+    var socialMetricsChart = new Chart(socialMetricsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Facebook', 'Twitter', 'Instagram', 'LinkedIn', 'YouTube'],
+            datasets: [{
+                label: 'Followers',
+                data: [1500, 1200, 2000, 800, 2500],
+                backgroundColor: ['#4267B2', '#1da1f2', '#e4405f', '#0077b5', '#FF0000'],
+                hoverBackgroundColor: ['#334d86', '#1a91da', '#d4264d', '#005180', '#cc0000'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 500
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            }
+        }
+    });
+</script>

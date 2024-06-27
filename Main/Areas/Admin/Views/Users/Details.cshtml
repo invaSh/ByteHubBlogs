@@ -1,0 +1,41 @@
+﻿@model Main.Models.ViewModels.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1 class="text-center">User Details</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="mb-3">
+        <label class="form-label">Id:</label>
+        <span class="form-control">@Model.Id</span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Username:</label>
+        <span class="form-control">@Model.Username</span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email:</label>
+        <span class="form-control">@Model.EmailAddress</span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Role:</label>
+        <span class="form-control">@Model.Role</span>
+    </div>
+
+    <div class="d-flex flex-column align-items-center my-3">
+        <div class="d-flex">
+            <a href="@Url.Action("Edit", "Users", new { area = "Admin", id = Model?.Id  })" class="btn btn-dark">Update</a>
+            <form method="post" action="@Url.Action("Delete", "Users", new { area = "Admin", id = Model?.Id })" class="d-inline">
+                <button type="submit" class="btn btn-danger mx-3">Delete</button>
+            </form>
+        </div>
+        <a href="@Url.Action("List", "Users", new { area = "Admin" })" class="btn btn-secondary mt-5">Back to List</a>
+    </div>
+</div>

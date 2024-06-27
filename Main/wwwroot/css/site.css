@@ -1,0 +1,30 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+    /* wwwroot/css/dark-mode.css */
+    body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+.dark-mode .card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Add more styles for dark mode as needed */

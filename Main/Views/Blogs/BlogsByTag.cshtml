@@ -1,0 +1,50 @@
+﻿@model Main.Models.ViewModels.BlogsByTagViewModel
+
+@{
+    ViewData["Title"] = $" {Model.Tag.DisplayName}";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-5">
+    <div class="container ">
+        <h1 class="text-center">All @Model.Tag.DisplayName Posts</h1>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row justify-content-center">
+            @if (Model != null && Model.Blogs.Any())
+            {
+                foreach (var blogPost in Model.Blogs)
+                {
+                    <div class="mb-5 bg-light mx-3 box-shadow p-3 col-4">
+                        <img src="@blogPost.FeaturedImageURL" alt="@blogPost.Heading" class="mb-3 d-block img-fluid">
+                        <h2 class="mb-3">@blogPost.Heading</h2>
+                        <p class="mb-2">
+                            Author: @blogPost.Author
+                            <br>
+                            Published Date: @blogPost.PublishedDate.ToShortDateString();
+                        </p>
+
+                        <p class="mb-4">
+                            @if (blogPost.BlogPostTags != null)
+                            {
+                                @foreach (var tag in blogPost.BlogPostTags)
+                                {
+                                    <span class="badge bg-secondary mx-1">@tag?.Tag?.Name</span>
+                                }
+                            }
+                        </p>
+                        <p class="mb-3">@blogPost.ShortDescription</p>
+
+                        <a class="btn btn-dark" href="@Url.Action("Details", "Blogs", new { id = blogPost.Id })">Read More</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <h3 class="text-center mt-5">No blog posts found..</h3>
+            }
+    </div>
+</div>

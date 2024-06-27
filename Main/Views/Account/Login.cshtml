@@ -1,0 +1,39 @@
+﻿@model Main.Models.ViewModels.LoginViewModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow p-4">
+                <h1 class="mb-4 text-center">Login</h1>
+
+                @if (ViewData.ModelState.IsValid == false)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger alert-dismissible fade show align-items-center pb-0" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" id="username" class="form-control" asp-for="Username" placeholder="Enter your username" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" id="password" class="form-control" asp-for="Password" placeholder="Enter your password" />
+                        </div>
+                    </div>
+                    <div class="mb-3 d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

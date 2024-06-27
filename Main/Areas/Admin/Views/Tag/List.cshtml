@@ -1,0 +1,101 @@
+﻿@model List<Main.Models.Domain.Tag>
+
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1 class="text-center">All Tags</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <form method="get" action="@Url.Action("List", "Tag", new { area = "Admin" })" class="mb-3">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="orderBy" class="form-label">Order by:</label>
+                <select name="orderBy" id="orderBy" class="form-select">
+                    <option value="Name">Name</option>
+                    <option value="Id">ID</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-dark">Apply</button>
+            </div>
+        </div>
+    </form>
+
+    <a href="@Url.Action("Add", "Tag", new { area = "Admin" })" class="btn btn-dark mb-3">Create a tag</a>
+
+    @if (Model != null && Model.Any())
+    {
+        var orderBy = Context.Request.Query["orderBy"];
+        var orderedTags = OrderTags(Model, orderBy);
+        int count = 1;
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Display Name</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tag in orderedTags)
+                {
+                    <tr>
+                        <td class="fw-bold">@(count++)</td>
+                        <td>@tag.Id</td>
+                        <td>@tag.Name</td>
+                        <td>@tag.DisplayName</td>
+                        <td>
+                            <a href="@Url.Action("Edit", "Tag", new { area = "Admin", id = tag.Id })" class="btn btn-outline-dark btn-sm">Edit</a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", "Tag", new { area = "Admin", id = tag.Id })" class="btn btn-outline-dark btn-sm">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @* Assuming you want 5 tags per page, adjust the pageSize value accordingly *@
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link bg-dark text-light" href="?page=@i&orderBy=@Context.Request.Query["orderBy"]">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+    else
+    {
+        <h3 class="text-center mt-5">No tags found.</h3>
+    }
+</div>
+
+@functions {
+    private IEnumerable<Main.Models.Domain.Tag> OrderTags(List<Main.Models.Domain.Tag> tags, string orderBy)
+    {
+        switch (orderBy)
+        {
+            case "Name":
+                return tags.OrderBy(tag => tag.Name);
+            case "Id":
+                return tags.OrderBy(tag => tag.Id);
+            // Add more cases for different criteria if needed
+            default:
+                return tags;
+        }
+    }
+}

@@ -1,0 +1,80 @@
+﻿@model Main.Models.ViewModels.UserList
+
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1 class="text-center">Users</h1>
+    </div>
+</div>
+
+<div class="container mt-5 d-flex flex-column align-items-center">
+    <a href="@Url.Action("Create", "Users", new { area = "Admin" })" class="btn btn-dark">Create a user</a>
+
+    <form method="get" class="my-5 d-flex flex-column align-items-center border-top border-secondary border-2" action="@Url.Action("List")">
+        <div class="mt-3">
+            <label class="mr-3">
+                <input type="checkbox" name="isAdmin" value="true" @(ViewBag.IsAdmin == true ? "checked" : "") />
+                Admin
+            </label>
+            <label>
+                <input type="checkbox" name="isUser" value="true" @(ViewBag.IsUser == true ? "checked" : "") />
+                User
+            </label>
+        </div>
+        <button type="submit" class="btn btn-dark mt-3">Filter</button>
+    </form>
+
+    @if (Model.Users != null && Model.Users.Any())
+    {
+        <table class="table table-striped mt-5">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Users.Count; i++)
+                {
+                    var user = Model.Users[i];
+                    <tr>
+                        <td class="fw-bold">@(i + 1)</td>
+                        <td>@user.Id</td>
+                        <td>@user.Username</td>
+                        <td>@user.EmailAddress</td>
+                        <td>
+                            <a href="@Url.Action("Details", "Users", new { area = "Admin", id = user.Id })" class="btn btn-light btn-outline-dark hover-text-primary">
+                                <i class="bi bi-info-circle"></i>
+                                Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mt-4">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link bg-dark text-light" href="?page=@i&isAdmin=@ViewBag.IsAdmin&isUser=@ViewBag.IsUser" style="color: black;">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+    }
+    else
+    {
+        <h1 class="text-center">Nothing Found!</h1>
+    }
+</div>

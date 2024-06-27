@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+    Layout = null; // This view does not use a layout
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .access-denied-container {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .access-denied-title {
+            color: #dc3545;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .access-denied-message {
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        .access-denied-icon {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="access-denied-container">
+        <i class="bi bi-shield-slash access-denied-icon"></i>
+        <h1 class="access-denied-title">Access Denied</h1>
+        <p class="access-denied-message">Sorry, you are not authorized to access this page.</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha384-wpGJ2T0C3h+3Xz02wSbYzHXkgitJlZ+oIQry2pDfJKEbgr4vKkW3+ET6IAXwxc1P" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shCk+qEMfX4LlJlCgmiK3igl9xxn2f+ObrJbJ" crossorigin="anonymous"></script>
+</body>
+</html>

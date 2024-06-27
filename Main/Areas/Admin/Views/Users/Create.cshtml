@@ -1,0 +1,77 @@
+﻿@model Main.Models.ViewModels.CreateUserViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container ">
+        <h1 class="text-center">Create User</h1>
+    </div>
+</div>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-5" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <ul>
+            @foreach (var key in ViewData.ModelState.Keys)
+            {
+                foreach (var error in ViewData.ModelState[key].Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+<div class="container py-5 mt-5">
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label fw-bold" asp-for="Username">Username: </label>
+            <input type="text" name="Username" class="form-control" asp-for="Username" value="@Html.Raw(HttpContextAccessor.HttpContext.Session.GetString("UsernameData"))" />
+            <span class="text-danger" asp-for="Username"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold" asp-for="Email">Email: </label>
+            <input type="text" name="Email" class="form-control" asp-for="Email" value="@Html.Raw(HttpContextAccessor.HttpContext.Session.GetString("EmailData"))" />
+            <span class="text-danger" asp-for="Email"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold" asp-for="Password">Password: </label>
+            <input type="password" name="Password" class="form-control" asp-for="Password" value="@Html.Raw(HttpContextAccessor.HttpContext.Session.GetString("PasswordData"))" />
+            <span class="text-danger" asp-for="Password"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Role: </label>
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsAdmin" type="radio" id="adminRole" name="IsAdmin" asp-for="IsAdmin" value="true">
+                <label class="form-check-label" for="adminRole">
+                    Admin
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsHeadAdmin" type="radio" id="headAdminRole" name="IsHeadAdmin" asp-for="IsHeadAdmin" value="true" @(User.IsInRole("Admin") ? "disabled" : "")>
+                <label class="form-check-label" for="headAdminRole">
+                    Head Admin
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsUser" type="radio" id="userRole" name="IsUser" asp-for="IsUser" value="true">
+                <label class="form-check-label" for="userRole">
+                    User
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-center">
+            <button type="submit" class="btn btn-dark rounded-3 px-5 py-2 fs-5">Create</button>
+        </div>
+    </form>
+</div>

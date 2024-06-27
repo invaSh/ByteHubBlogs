@@ -1,0 +1,255 @@
+﻿@model Main.Models.Domain.BlogPost
+@using System.Security.Claims
+@using Main.Models.Domain;
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUser> signInManager
+@inject UserManager<AppUser> userManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    ViewData["Title"] = Model.Heading;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@functions {
+    bool IsCurrentUser(AppUser user)
+    {
+        var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return user.Id == currentUserId;
+    }
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col col-lg-8">
+            @if (Model != null)
+            {
+                <h1 class="mb-3">@Model.Heading</h1>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-secondary">Date: @Model.PublishedDate.ToShortDateString()</span>
+                    <div class="mb-3 d-flex">
+                        @foreach (var tag in Model.BlogPostTags)
+                        {
+                            <span class="badge bg-secondary me-1">@tag.Tag.Name</span>
+                        }
+                    </div>
+                    <span class="text-secondary">By: @Model.Author</span>
+                </div>
+
+
+                <form id="likeForm" class="d-flex mb-3 align-items-center" action="/Blogs/Like">
+                    <div class="fw-bold">
+                        <i class="bi fw-bold" id="likeIcon"></i>
+                        <span id="likeCount">@Model.Likes.Count</span> Likes
+                    </div>
+                    <button type="submit" id="likeButton" class="btn btn-outline-dark mx-3 px-3 py-1">
+                        @if (Model.Likes.Any(l => l.UserId == User.FindFirst(ClaimTypes.NameIdentifier)?.Value))
+                        {
+                            <span>Unlike</span>
+                        }
+                        else
+                        {
+                            <span>Like</span>
+                        }
+                    </button>
+                </form>
+
+                <img src="@Model.FeaturedImageURL" class="d-block img-fluid mb-3" />
+                <div class="mg-3 blog-details-content">
+                    @Html.Raw(Model.Content)
+                </div>
+
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h5>Comments</h5>
+
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <form method="post" action="/Comments/Create">
+                                <div class="mb-3">
+                                    <label class="form-label">Comment Description</label>
+                                    <input type="text" name="description" class="form-control" value="@Html.Raw(HttpContextAccessor.HttpContext.Session.GetString("TempComent"))" required />
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-dark">Submit</button>
+                                    <input type="hidden" name="postId" asp-for="@Model.Id" />
+                                </div>
+                            </form>
+                        }
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Comments != null && Model.Comments.Any())
+                        {
+                            @foreach (var comment in Model.Comments)
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div id="comment-@comment.Id">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="comment-text">@comment.Description</span>
+                                                @if (IsCurrentUser(comment.AppUser) || User.IsInRole("Head Admin"))
+                                                {
+
+                                                    <div class="d-flex">
+                                                        <form id="deleteCommentForm-@comment.Id" method="post" action="/Comments/Delete">
+                                                            <input type="hidden" name="id" value="@comment.Id" />
+                                                            <button type="submit" class="btn btn-danger mx-3">Delete</button>
+                                                        </form>
+                                                        <button class="btn btn-dark edit-comment-btn" data-comment-id="@comment.Id">Edit</button>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <span class="text-secondary">@comment.AppUser.UserName</span>
+                                                <span class="text-secondary">@comment.DateAdded.ToShortDateString()</span>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+
+            }
+            else
+            {
+                <p>Blog post not found!</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCommentModalLabel">Edit Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/Comments/Edit">
+                    <input type="hidden" id="editCommentId" name="id">
+                    <textarea class="form-control" id="editCommentDescription" name="description" rows="3" required></textarea>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-dark">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchAndDisplayLikes();
+
+            const likeForm = document.getElementById("likeForm");
+            likeForm.addEventListener("submit", likeSubmit);
+        });
+
+        async function fetchAndDisplayLikes() {
+            try {
+                const response = await fetch(`/Blogs/GetLikes?blogPostId=@Model.Id`);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const responseData = await response.json();
+                console.log(responseData);
+
+
+                const likeButton = document.getElementById("likeButton");
+
+                likeButton.innerText = responseData.isLiked ? "Unlike" : "Like";
+                likeButton.classList.toggle("btn-dark", responseData.isLiked);
+                likeButton.classList.toggle("text-light", responseData.isLiked);
+                likeButton.classList.toggle("btn-light", !responseData.isLiked);
+                document.getElementById('likeIcon').classList.toggle("bi-heart-fill", responseData.isLiked);
+                document.getElementById('likeIcon').classList.toggle("bi-heart", !responseData.isLiked);
+                document.getElementById("likeCount").innerText = responseData.likeCount;
+            } catch (error) {
+                console.error('Fetch Error:', error);
+            }
+        }
+
+        async function likeSubmit(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            formData.append("BlogPostId", "@Model.Id");
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const responseData = await response.json();
+                console.log(responseData);
+
+                const likeButton = document.getElementById("likeButton");
+                document.getElementById('likeCount').innerText = responseData.likeCount;
+                if (responseData.isLiked) {
+                    likeButton.innerText = "Unlike";
+                } else {
+                    likeButton.innerText = "Like";
+                }
+
+                likeButton.classList.toggle("btn-light", !responseData.isLiked);
+                likeButton.classList.toggle("text-light", responseData.isLiked);
+                likeButton.classList.toggle("btn-dark", responseData.isLiked);
+                document.getElementById('likeIcon').classList.toggle("bi-heart-fill", responseData.isLiked);
+                document.getElementById('likeIcon').classList.toggle("bi-heart", !responseData.isLiked);
+
+
+            } catch (error) {
+                console.error('Fetch Error:', error);
+            }
+        }
+
+
+
+        //-------------------------------------------------------------------------------------
+
+        var editButtons = document.querySelectorAll(".edit-comment-btn");
+        editButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var commentId = this.getAttribute("data-comment-id");
+                var commentText = document.querySelector("#comment-" + commentId + " .comment-text").textContent.trim();
+
+                document.querySelector("#editCommentId").value = commentId;
+                document.querySelector("#editCommentDescription").value = commentText;
+
+                var modal = new bootstrap.Modal(document.getElementById("editCommentModal"));
+                modal.show();
+            });
+        });
+
+        var closeModalButton = document.querySelector("#editCommentModal .close");
+        closeModalButton.addEventListener("click", function () {
+            var modal = bootstrap.Modal.getInstance(document.getElementById("editCommentModal"));
+            modal.hide();
+        });
+
+
+
+
+    </script>
+}

@@ -1,0 +1,72 @@
+﻿@model Main.Models.ViewModels.UserProfileViewModel
+
+@{
+    ViewData["Title"] = Model.Username;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-6 offset-md-3 d-flex flex-column align-items-center">
+            <div class="card">
+                <div class="card-header d-flex justify-content-center">
+                    <h3 class="card-title">User Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Username:</strong> @Model.Username</li>
+                                <li class="list-group-item"><strong>Email:</strong> @Model.EmailAddress</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("EditProfile", "Account", new { id = Model.Id })" class="btn btn-dark my-3">Edit</a>
+        </div>
+    </div>
+    <hr />
+    <div class="text-center">
+        <h4>Your Blogs</h4>
+        <small>Showing all (@Model.BlogPosts.Count()) blogs</small>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        @if (Model != null && Model.BlogPosts.Any())
+        {
+            foreach (var blogPost in Model.BlogPosts)
+            {
+                <div class="mb-5 bg-light mx-3 box-shadow p-3 col-4">
+                    <img src="@blogPost.FeaturedImageURL" alt="@blogPost.Heading" class="mb-3 d-block img-fluid">
+                    <h2 class="mb-3">@blogPost.Heading</h2>
+                    <p class="mb-2">
+                        Author: @blogPost.Author
+                        <br>
+                        Published Date: @blogPost.PublishedDate.ToShortDateString();
+                    </p>
+
+                    <p class="mb-4">
+                        @if (blogPost.BlogPostTags != null)
+                        {
+                            @foreach (var tag in blogPost.BlogPostTags)
+                            {
+                                <span class="badge bg-secondary mx-1">@tag?.Tag?.Name</span>
+                            }
+                        }
+                    </p>
+                    <p class="mb-3">@blogPost.ShortDescription</p>
+
+                    <a class="btn btn-dark" href="@Url.Action("Details", "Blogs", new { id = blogPost.Id })">Read More</a>
+                    <a class="btn btn-dark" href="@Url.Action("Edit", "Blogs", new { id = blogPost.Id })">Edit</a>
+                </div>
+            }
+        }
+        else
+        {
+            <h3 class="text-center mt-5">No blog posts found..</h3>
+        }
+    </div>
+</div>

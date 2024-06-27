@@ -1,0 +1,194 @@
+﻿<style>
+    /* Add this style to make dark mode text visible */
+    .dark-mode-text {
+        color: #ffffff; /* Set the desired color for dark mode text */
+    }
+
+    /* Add this style to make sure dark mode text is visible even in light mode */
+    body:not(.dark-mode) .dark-mode-text {
+        color: #000000; /* Set the desired color for light mode text */
+    }
+
+    /* Add this style for the blog post content to ensure visibility in both modes */
+    .blog-post-content {
+        color: #000000; /* Set the desired color for text inside the blog post */
+    }
+
+    /* Add this style for the author, published date, and heading */
+    .author, .published-date, .heading {
+        color: #000000; /* Set the desired color for these elements */
+    }
+</style>
+
+
+@model Main.Models.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Home Page";
+    ViewData["IsHomePage"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Add this script for dynamic dark/light mode -->
+<script>
+    function toggleDarkMode() {
+        const body = document.body;
+        body.classList.toggle("dark-mode");
+    }
+</script>
+
+<div class="container col-xxl-8 px-4 py-5">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex flex-wrap justify-content-center">
+                    @if (Model != null && Model.Tags.Any())
+                    {
+                        foreach (var tag in Model.Tags)
+                        {
+                            <span class="badge bg-dark mt-2 mx-1 customTags">
+                                <a href="@Url.Action("BlogsByTag", "Blogs", new { tagId = tag.Id })" class="text-light text-decoration-none">
+                                    @tag.DisplayName
+                                </a>
+                            </span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-center g-5 py-3 my-5">
+        <div class="col-12">
+            <form method="get" action="@Url.Action("Search", "Home")" class="d-flex">
+                <input type="text" name="query" placeholder="Search by tag..." class="form-control me-2">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center d-flex align-items-center border-top border-bottom py-5 mt-5 banner">
+        <div class="col-12 col-lg-6">
+            <h1 class="display-5 fw-bold lh-1 mb-3 dark-mode-text">
+                BYTEHUB Blogs
+            </h1>
+            <h3 class="dark-mode-text">Empowering Minds, Connecting Worlds.</h3>
+            <p class="lead dark-mode-text" id="briefText">
+                Welcome to Byte Hub Blogs – where every click unlocks a world of knowledge, creativity, and inspiration.
+            </p>
+            <!-- See More/Less Toggle -->
+            <a href="javascript:void(0);" id="seeMoreToggle" onclick="toggleText()">See More</a>
+            <!-- Additional Text (initially hidden) -->
+            <div id="moreText" style="display: none;">
+                <p class="lead dark-mode-text">
+                    Dive into our byte-sized insights, explore diverse perspectives, and embark on a journey of discovery. Let your curiosity thrive in our vibrant community of thinkers, dreamers, and doers. Join us at Byte Hub Blogs, where ideas find their voice and innovation knows no bounds.
+                </p>
+            </div>
+        </div>
+        <img src="https://cdn.dribbble.com/users/1299339/screenshots/3065748/blogging_d_1.gif" class="img-fluid col-lg-6" />
+    </div>
+
+    <div class="container d-flex justify-content-center mb-5 ">
+        <a class="btn btn-dark my-5"
+           asp-area=""
+           asp-controller="Blogs"
+           asp-action="Add">Write a Blog</a>
+    </div>
+    <div class="banner1 mb-5">
+        <div class="content">
+            <span id="blogCount">0</span> Blogs
+            <span>and</span>
+            <span id="userCount">0</span> Users
+        </div>
+    </div>
+    <div class="text-center mb-5">
+        <small>All Blogs Available (@Model.BlogPosts.Count())</small>
+    </div>
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-8">
+            @if (Model != null && Model.BlogPosts.Any())
+            {
+                foreach (var blogPost in Model.BlogPosts)
+                {
+                    <div class="mb-5 bg-light box-shadow p-4 dark-mode-text">
+                        <img src="@blogPost.FeaturedImageURL" alt="@blogPost.Heading" class="mb-3 d-block img-fluid">
+                        <h2 class="mb-3 heading">@blogPost.Heading</h2>
+                        <p class="mb-2 dark-mode-text author">
+                            Author: @blogPost.Author
+                            <br>
+                            Published Date: @blogPost.PublishedDate.ToShortDateString();
+                        </p>
+
+                        <p class="mb-4">
+                            @if (blogPost.BlogPostTags != null)
+                            {
+                                @foreach (var tag in blogPost.BlogPostTags)
+                                {
+                                    <span class="badge bg-secondary mx-1">@tag.Tag.DisplayName</span>
+                                }
+                            }
+                        </p>
+                        <p class="mb-3 blog-post-content">@blogPost.ShortDescription</p>
+
+                        <a class="btn btn-dark" href="@Url.Action("Details", "Blogs", new { id = blogPost.Id })">Read More +</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <h3 class="text-center mt-5 dark-mode-text">No blog posts found..</h3>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    const blogCountElement = document.getElementById('blogCount');
+    const userCountElement = document.getElementById('userCount');
+
+    let animated = false;
+
+    function checkAndAnimateNumbers() {
+        const rect = blogCountElement.getBoundingClientRect();
+        if (rect.top <= window.innerHeight && !animated) {
+            animated = true;
+            // Example end values, replace with actual counts
+            animateValue(blogCountElement, 0, 2450, 2000); // 100 blogs
+            animateValue(userCountElement, 0, 1350, 2000); // 50 users
+        }
+    }
+
+    // Check on scroll
+    window.addEventListener('scroll', checkAndAnimateNumbers);
+
+    // Initial check
+    checkAndAnimateNumbers();
+
+    function toggleText() {
+        var moreText = document.getElementById("moreText");
+        var seeMoreText = document.getElementById("seeMoreToggle");
+
+        if (moreText.style.display === "none") {
+            // If hidden, show it
+            moreText.style.display = "block";
+            seeMoreText.textContent = "See Less";
+        } else {
+            // If shown, hide it
+            moreText.style.display = "none";
+            seeMoreText.textContent = "See More";
+        }
+    }
+</script>
